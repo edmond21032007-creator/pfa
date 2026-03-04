@@ -47,11 +47,33 @@ double PHI(double x)
 */
 double optionPrice(Option* option)
 {
+  if (option.type==CALL){
+
+    double z0 = log(option.K/option.S0) - (option.mu - option.sig*option.sig/2)option.T;
+    z0 = z0/option.sig*sqrt(option.T);
+
+    double x = option.sig*sqrt(option.T)-z0;
+
+    double sum = option.S0 * (exp(option.mu * option.T));
+    sum = sum*PHI(x);
+    sum+= - option.K*PHI(-z0);
+
+    return sum;
+
+  }
+  else if (option.type == PUT){
+
+    double z0 = log(option.K/option.S0) - (option.mu - option.sig*option.sig/2)option.T;
+    z0 = z0/option.sig*sqrt(option.T);
 
 
+    double sum = option.K*PHI(z0)-S0*exp(option.mu*option.T) * PHI(z0-option.mu*sqrt(option.T));
+
+    return sum;
 
 
-  return 0.0;
+  }
+
 }
 
 
