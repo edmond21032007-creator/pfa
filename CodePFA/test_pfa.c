@@ -6,7 +6,10 @@
 #include "pfa.h"
 
 /* Code here anything you want to test your pfa functions and to show your numerical results */
+#include <math.h>
+#include "integration.h"
 int main()
 {
-  return 0;
+  init_integration("trapezes", 0.1);
+
 }
