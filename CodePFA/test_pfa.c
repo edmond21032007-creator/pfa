@@ -12,4 +12,48 @@ int main()
 {
   init_integration("trapezes", 0.1);
 
+  Option opt1;
+
+  opt1.type = CALL;
+  opt1.S0 = 100.0;   // prix actuel de l'actif
+  opt1.K = 100.0;    // strike
+  opt1.T = 1.0;      // maturité 1 an
+  opt1.mu = 0.05;    // rendement moyen 5%
+  opt1.sig = 0.2;    // volatilité 20%
+
+  Option opt2;
+
+  opt2.type = PUT;
+  opt2.S0 = 100.0;
+  opt2.K = 110.0;
+  opt2.T = 1.0;
+  opt2.mu = 0.05;
+  opt2.sig = 0.2;
+
+  double price = optionPrice(&opt1);
+  printf("Option price = %f\n", price);
+
+  InsuredClient client;
+  double p[3] = {0.7, 0.2, 0.1}; // 70% aucun sinistre, 20% 1 sinistre, 10% 2
+
+  client.m = 6.0;
+  client.s = 0.5;
+  client.p = p;
+
+  //Remboursement : PDF
+  double x = 500.0;
+
+  double pdf = clientPDF_X(&client, x);
+  printf("PDF X = %f\n", pdf);
+
+  //Remboursement CDF :
+  double cdf = clientCDF_X(&client, x);
+  printf("CDF X = %f\n", cdf);
+
+  //Sinistres
+  double s = 1000.0;
+
+  double cdfS = clientCDF_S(&client, s);
+  printf("CDF S = %f\n", cdfS);
+
 }

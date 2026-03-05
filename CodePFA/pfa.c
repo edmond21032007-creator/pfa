@@ -22,7 +22,7 @@ bool init_integration(char* quadrature, double dt)
 
   pfa_dt = dt;
 
-  return setQuadFormula(pfaQF,quadrature);
+  return setQuadFormula(&pfaQF,quadrature);
 
 }
 
@@ -38,7 +38,7 @@ double phi(double x)
 double PHI(double x)
 {
 
-  return 0.5 + integrate_dx(phi,(double)0,x,pfa_dt,pfaQF)
+  return 0.5 + integrate_dx(phi,(double)0,x,pfa_dt,&pfaQF);
 
 }
 
@@ -47,27 +47,27 @@ double PHI(double x)
 */
 double optionPrice(Option* option)
 {
-  if (option.type==CALL){
+  if (option->type==CALL){
 
-    double z0 = log(option.K/option.S0) - (option.mu - option.sig*option.sig/2)option.T;
-    z0 = z0/option.sig*sqrt(option.T);
+    double z0 = log(option->K/option->S0) - (option->mu - option->sig*option->sig/2)*option->T;
+    z0 = z0/(option->sig*sqrt(option->T));
 
-    double x = option.sig*sqrt(option.T)-z0;
+    double x = option->sig*sqrt(option->T)-z0;
 
-    double sum = option.S0 * (exp(option.mu * option.T));
+    double sum = option->S0 * (exp(option->mu * option->T));
     sum = sum*PHI(x);
-    sum+= - option.K*PHI(-z0);
+    sum+= - option->K*PHI(-z0);
 
     return sum;
 
   }
-  else if (option.type == PUT){
+  else if (option->type == PUT){
 
-    double z0 = log(option.K/option.S0) - (option.mu - option.sig*option.sig/2)option.T;
-    z0 = z0/option.sig*sqrt(option.T);
+    double z0 = log(option->K/option->S0) - (option->mu - option->sig*option->sig/2)*option->T;
+    z0 = z0/(option->sig*sqrt(option->T));
 
 
-    double sum = option.K*PHI(z0)-S0*exp(option.mu*option.T) * PHI(z0-option.mu*sqrt(option.T));
+    double sum = option->K*PHI(z0)-option->S0*exp(option->mu*option->T) * PHI(z0-option->mu*sqrt(option->T));
 
     return sum;
 
@@ -87,8 +87,8 @@ double clientPDF_X(InsuredClient* client, double x)
 {
   /*Densité*/
   if(x>0){
-    double z = (log(x)-client.m)/client.s;
-    double sum = 1/client.s*x * phi(z);
+    double z = (log(x)-client->m)/client->s;
+    double sum = phi(z)/(client->s*x) ;
     return sum;
   }
   else{
@@ -102,7 +102,9 @@ double clientPDF_X(InsuredClient* client, double x)
 */
 double clientCDF_X(InsuredClient* client, double x)
 {
-  double z = (log(x) - client.m/client.s)
+  if (x <= 0) return 0.0;
+  
+  double z = (log(x) - client->m)/client->s;
   double sum = PHI(z);
   return sum;
 }
@@ -110,7 +112,7 @@ double clientCDF_X(InsuredClient* client, double x)
 static InsuredClient* localClient;
 static double localX;
 
-/* This function assumes that static variables localClient and localX have been set.
+/* This function assumes that static variables localClient and localX have been set->
    It can be an argument of integrate_dx (since it has the good signature)
 */
 static double localProductPDF(double t)
@@ -120,20 +122,20 @@ static double localProductPDF(double t)
 
 /* Density of X1+X2
 
-   This function assumes that static variable localClient has been set.
+   This function assumes that static variable localClient has been set->
    It is called by clientPDF_X1X2
    It can also be an argument of integrate_dx (since it has the good signature)
 */
 static double localPDF_X1X2(double x)
 {
   localX = x;
-  double sum = integrate_dx(localProductPDF,0,x,pfa_dt,pfaQF);
+  double sum = integrate_dx(localProductPDF,0,x,pfa_dt,&pfaQF);
   return sum;
 } 
 
-/* Cumulative distribution function (CDF) of variable X1+X2.
+/* Cumulative distribution function (CDF) of variable X1+X2->
    X1 and X2 are the reimbursements of the two claims from the client (assuming there are 
-   two claims).
+   two claims)->
 */
 
 double clientPDF_X1X2(InsuredClient* client, double x)
@@ -148,9 +150,9 @@ double clientCDF_X1X2(InsuredClient* client, double x)
 {
   localClient = client;
 
-  double sum = integrate_dx(localPDF_X1X2,0,x,pfa_dt,pfaQF);
+  double sum = integrate_dx(localPDF_X1X2,0,x,pfa_dt,&pfaQF);
 
-  return 0.0;
+  return sum;
 }
 
 /* Cumulative distribution function (CDF) of variable S.
@@ -158,6 +160,6 @@ double clientCDF_X1X2(InsuredClient* client, double x)
 */
 double clientCDF_S(InsuredClient* client, double x)
 {
-  double sum = client.p[0] + client.p[1]*clientCDF_X(x) + client.p[2]*clientCDF_X1X2(x);
+  double sum = client->p[0] + client->p[1]*clientCDF_X(client,x) + client->p[2]*clientCDF_X1X2(client,x);
   return sum;
 }
