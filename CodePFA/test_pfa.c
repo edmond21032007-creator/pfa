@@ -16,21 +16,21 @@ int main()
 
   opt1.type = CALL;
   opt1.S0 = 100.0;   // prix actuel de l'actif
-  opt1.K = 100.0;    // strike
-  opt1.T = 1.0;      // maturité 1 an
+  opt1.K = 103.0;    // strike
+  opt1.T = 2.0;      // maturité 1 an
   opt1.mu = 0.05;    // rendement moyen 5%
-  opt1.sig = 0.2;    // volatilité 20%
+  opt1.sig = 0.02;    // volatilité 20%
 
   Option opt2;
 
   opt2.type = PUT;
   opt2.S0 = 100.0;
-  opt2.K = 110.0;
-  opt2.T = 1.0;
+  opt2.K = 115.0;
+  opt2.T = 2.2;
   opt2.mu = 0.05;
-  opt2.sig = 0.2;
+  opt2.sig = 0.02;
 
-  double price = optionPrice(&opt1);
+  double price = optionPrice(&opt2);
   printf("Option price = %f\n", price);
 
   InsuredClient client;

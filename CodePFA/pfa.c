@@ -67,7 +67,7 @@ double optionPrice(Option* option)
     z0 = z0/(option->sig*sqrt(option->T));
 
 
-    double sum = option->K*PHI(z0)-option->S0*exp(option->mu*option->T) * PHI(z0-option->mu*sqrt(option->T));
+    double sum = option->K*PHI(z0)-option->S0*exp(option->mu*option->T) * PHI(z0-option->sig*sqrt(option->T));
 
     return sum;
 
