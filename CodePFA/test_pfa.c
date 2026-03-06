@@ -10,16 +10,16 @@
 #include "integration.h"
 int main()
 {
-  init_integration("trapezes", 0.1);
+  init_integration("trapezes", 0.01);
 
   Option opt1;
 
   opt1.type = CALL;
   opt1.S0 = 100.0;   // prix actuel de l'actif
-  opt1.K = 103.0;    // strike
-  opt1.T = 2.0;      // maturité 1 an
+  opt1.K = 101.0;    // strike
+  opt1.T = 2.2;      // maturité 1 an
   opt1.mu = 0.05;    // rendement moyen 5%
-  opt1.sig = 0.02;    // volatilité 20%
+  opt1.sig = 0.02;    // volatilité 2%
 
   Option opt2;
 
@@ -34,24 +34,24 @@ int main()
   printf("Option price = %f\n", price);
 
   InsuredClient client;
-  double p[3] = {0.7, 0.2, 0.1}; // 70% aucun sinistre, 20% 1 sinistre, 10% 2
+  double p[3] = {0.9, 0.05, 0.05}; 
 
-  client.m = 6.0;
-  client.s = 0.5;
+  client.m = 1.0;
+  client.s = 1.0;
   client.p = p;
 
   //Remboursement : PDF
-  double x = 500.0;
+  double x = 2.0;
 
-  double pdf = clientPDF_X(&client, x);
-  printf("PDF X = %f\n", pdf);
+  double pdf = clientPDF_X1X2(&client, x);
+  printf("PDF X1X2 = %f\n", pdf);
 
   //Remboursement CDF :
-  double cdf = clientCDF_X(&client, x);
-  printf("CDF X = %f\n", cdf);
+  double cdf = clientCDF_X1X2(&client, x);
+  printf("CDF X1X2 = %f\n", cdf);
 
   //Sinistres
-  double s = 1000.0;
+  double s = 3.0;
 
   double cdfS = clientCDF_S(&client, s);
   printf("CDF S = %f\n", cdfS);

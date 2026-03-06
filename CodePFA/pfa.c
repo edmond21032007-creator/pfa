@@ -37,9 +37,7 @@ double phi(double x)
 /* Cumulative distribution function of the normal distribution */
 double PHI(double x)
 {
-
   return 0.5 + integrate_dx(phi,(double)0,x,pfa_dt,&pfaQF);
-
 }
 
 /* =====================================
@@ -63,11 +61,12 @@ double optionPrice(Option* option)
   }
   else if (option->type == PUT){
 
-    double z0 = log(option->K/option->S0) - (option->mu - option->sig*option->sig/2)*option->T;
+    double z0 = log(option->K/option->S0) - (option->mu - option->sig*option->sig/2.0)*option->T;
     z0 = z0/(option->sig*sqrt(option->T));
 
 
     double sum = option->K*PHI(z0)-option->S0*exp(option->mu*option->T) * PHI(z0-option->sig*sqrt(option->T));
+double a = z0 - option->sig * sqrt(option->T);
 
     return sum;
 
